@@ -26,7 +26,8 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     window.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
         this.addEventListener('load', function() {
           //siteAndRequestMapArray from siteAndRequestMap.js
-		  console.log('url=',url,', this.responseType=',this.responseType);
+		  if(url.includes('starmap'))
+			console.log('url=',url,', this.responseType=',this.responseType);
 		  if(this.responseType === 'text' || this.responseType === ''){
 			//console.log('url=',url,', responseText=',this.responseText);
 			passMessageIfInMap(url, this.responseText, pageAndRequestMapArray); 
