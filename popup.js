@@ -1,24 +1,34 @@
-// Initialize butotn with users's prefered color
-let changeColor = document.getElementById("changeColor");
+window.onload=function(){
+	
+    chrome.storage.local.get("docname", function(obj) {
+        document.getElementById('docname').value=obj.docname
+    });
+	
+	chrome.storage.local.get("isenable", function(obj) {
+	    document.getElementById('isenable').checked=obj.isenable
+	});
 
-chrome.storage.sync.get("color", ({ color }) => {
-  changeColor.style.backgroundColor = color;
-});
+}
 
-// When the button is clicked, inject setPageBackgroundColor into current page
-changeColor.addEventListener("click", async () => {
-  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+//保存
+document.getElementById('save').onclick = function(){
 
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: setPageBackgroundColor,
-  });
-});
-
-// The body of this function will be execuetd as a content script inside the
-// current page
-function setPageBackgroundColor() {
-  chrome.storage.sync.get("color", ({ color }) => {
-    document.body.style.backgroundColor = color;
-  });
+	var docname = document.getElementById('docname').value;
+    var isenable = document.getElementById('isenable').checked;
+    var p = {
+		"docname":docname,
+        "isenable":isenable
+    }
+    chrome.storage.local.set(p,function(){
+        alert('设置已保存');
+        }
+    );
+	
+ //  chrome.runtime.sendMessage({ action: "doSomething" }, response => {
+	// if (response.success) {
+	//   console.log(response.data);
+	// } else {
+	//   console.error(response.error);
+	// }
+ //  });
 }

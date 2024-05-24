@@ -88,3 +88,11 @@ https://stackoverflow.com/questions/8939467/chrome-extension-to-read-http-respon
 
 3. How to get http(Fetch) response body
 https://blog.logrocket.com/intercepting-javascript-fetch-api-requests-responses/
+
+
+
+
+## 主要使用interceptXHRorFETCH.js进行拦截。
+   在content-script.js加载interceptXHRorFETCH.js使其生效.
+	pageAndRequestMap.js用于配置匹配url，及处理response.
+	

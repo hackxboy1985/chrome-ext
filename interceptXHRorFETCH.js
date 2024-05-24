@@ -11,7 +11,7 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     urlMapArray[0].requestUrl.map(item=>{
       // only postMessage when requestUrl is in map array
       if(requestUrl.match(item)) {
-		  //console.log('requestUrl=',requestUrl,', match item',item);
+			console.log('requestUrl=',requestUrl,', match item',item);
 		    urlMapArray[0].handler({data, customEvent: true, requestUrl:requestUrl}, document);
 			//window.postMessage('message', {data, customEvent: true, requestUrl:requestUrl});
 	  }else{
@@ -26,7 +26,7 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     window.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
         this.addEventListener('load', function() {
           //siteAndRequestMapArray from siteAndRequestMap.js
-		  //console.log('url=',url,', this.responseType=',this.responseType);
+		  console.log('url=',url,', this.responseType=',this.responseType);
 		  if(this.responseType === 'text' || this.responseType === ''){
 			//console.log('url=',url,', responseText=',this.responseText);
 			passMessageIfInMap(url, this.responseText, pageAndRequestMapArray); 

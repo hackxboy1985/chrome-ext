@@ -72,3 +72,34 @@ window.addEventListener('message', function(e) {
 //     schema["listing.sellingProduct.productName.1.text"]             = jsonpath(data.listing.sellingProduct.product)
 //     schema["listing.sellingProduct.productName.1.text"]             = jsonpath(data.listing.sellingProduct.product)
 // }
+
+
+
+
+
+function loadcfg(){
+	
+	chrome.storage.local.get("isenable", function(obj) {
+
+		let docname="";		
+		chrome.storage.local.get("docname", function(obj) {
+			docname=obj.docname
+		});
+		
+		console.log('docname:',docname);
+		window.docname=docname;
+		console.log('window.docname:',window.docname);
+		
+		if(obj.isenable){
+			console.log("插件已经准备开启");
+			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
+	//        setTimeout(sent_req,2000);
+		}else{
+			console.log("插件未开启");
+		}
+	});
+}
+
+//程序入口
+// loadcfg();
+//setTimeout(loadcfg,2000);

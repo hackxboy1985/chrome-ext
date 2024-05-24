@@ -1,22 +1,24 @@
 {
-  "name": "Getting Started Example",
-  "description": "Build an Extension!",
+  "name": "BigBang",
+  "description": "xxxxxx!",
   "version": "1.0",
   "manifest_version": 3,
+  
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
    {
      "matches": ["https://*.amazon.com/*", "https://*.baidu.com/*"],
-     "css": ["my-styles.css"],
      "js": [ "pageAndRequestMap.js","content-script.js"],
-     "run_at": "document_start"
+	 "css": ["my-styles.css"]
+     /* "run_at": "document_start" 
+	 */
    }
  ],
  "web_accessible_resources": [
     {
-	/**
+	/** 原
 	 "resources": ["pageAndRequestMap.js","inject.js","interceptXHRorFETCH.js"],
 	 */
      "resources": ["pageAndRequestMap.js","inject.js","interceptXHRorFETCH.js"],

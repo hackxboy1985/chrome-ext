@@ -19,9 +19,12 @@
 	handler: function (data, doc, win){
 		// console.log(data, doc,1688);
 		//console.log(data);
-		console.log('url=',data.requestUrl,',response=',data.data);
+		console.log('@@@url=',data.requestUrl,',response=',data.data);
 		//alert(JSON.stringify(data));
-		tips(data.data);
+		console.log('window.docname=',window.docname);
+		httpRequest('https://api.mints-tech.cn/camera-api/common/health','aa');
+		
+		//tips(data.data);
 	}
 },
 {
@@ -39,6 +42,17 @@
 	}
 }
 ];
+
+//构造请求，发给OA
+function httpRequest(url,data, callback){
+	console.log('get start');
+    var xhr = new XMLHttpRequest();
+    xhr.open('get',url);
+    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    //chrome.storage.local.set({"log":"发送数据给OA，OA处理中"});
+    xhr.send(data);
+	console.log('get end');
+}
 
 
 function tips(str){
@@ -77,3 +91,29 @@ function tips(str){
 	  //alert('你的浏览器不支持通知');
 	}
 }
+
+
+//export let docname="";
+function loadcfg(){
+	console.log('-----');
+	chrome.storage.local.get("isenable", function(obj) {
+		
+		let docname='';
+		chrome.storage.local.get("docname", function(obj) {
+			docname=obj.docname
+		});
+		window.docname=docname;
+		console.log('doc name:',window.docname);
+
+		if(obj.isenable){
+			console.log("插件已经准备开启");
+			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
+	//        setTimeout(sent_req,2000);
+		}else{
+			console.log("插件未开启");
+		}
+	});
+}
+
+//程序入口
+//setTimeout(loadcfg,2000);
