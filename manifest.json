@@ -26,7 +26,7 @@
    }
   ],
   "host_permissions":["*://*.amazon.com/*","*://*.baidu.com/*"],
-  "permissions": ["storage", "tabs", "activeTab", "scripting","debugger","webRequest"],
+  "permissions": ["contextMenus","storage", "tabs", "activeTab", "scripting","debugger","webRequest"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

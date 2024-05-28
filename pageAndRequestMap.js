@@ -22,7 +22,8 @@
 		console.log('@@@url=',data.requestUrl,',response=',data.data);
 		//alert(JSON.stringify(data));
 		console.log('window.docname=',window.docname);
-		httpRequest('https://api.mints-tech.cn/camera-api/common/health','aa');
+		showWeakPrompt('抓到body');
+		//httpRequest('https://api.mints-tech.cn/camera-api/common/health','aa');
 		
 		//tips(data.data);
 	}
@@ -52,6 +53,53 @@ function httpRequest(url,data, callback){
     //chrome.storage.local.set({"log":"发送数据给OA，OA处理中"});
     xhr.send(data);
 	console.log('get end');
+}
+
+function showWeakPrompt(message) {
+  console.log('showWeakPrompt', document);
+
+  const weakPrompt = document.createElement('div');
+  weakPrompt.id = 'hackxboy';
+  weakPrompt.textContent = message;
+  weakPrompt.style.position = 'fixed';
+  weakPrompt.style.top = '10%';
+  weakPrompt.style.left = '50%';
+  weakPrompt.style.transform = 'translate(-50%, -50%)';
+  weakPrompt.style.backgroundColor = 'rgba(0, 0.5, 0, 0.8)';
+  weakPrompt.style.color = 'white';
+  weakPrompt.style.padding = '10px';
+  weakPrompt.style.borderRadius = '5px';
+  weakPrompt.style.zIndex = 100;
+
+  document.body.appendChild(weakPrompt);
+
+  setTimeout(() => {
+    document.body.removeChild(weakPrompt);
+  }, 3000);
+  
+  //init();
+}
+
+function init(){
+	document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+
+      const customMenuItem = document.createElement('div');
+      customMenuItem.textContent = '清除';
+      customMenuItem.style.backgroundColor = 'lightgray';
+      customMenuItem.style.padding = '5px';
+
+      customMenuItem.addEventListener('click', function () {
+        // 在这里添加清除操作的代码
+        alert('执行清除操作！');
+      });
+
+      document.body.appendChild(customMenuItem);
+
+      setTimeout(() => {
+        document.body.removeChild(customMenuItem);
+      }, 3000);
+    });
 }
 
 
