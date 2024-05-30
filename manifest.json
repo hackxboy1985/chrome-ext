@@ -21,7 +21,7 @@
 	/** 原
 	 "resources": ["pageAndRequestMap.js","inject.js","interceptXHRorFETCH.js"],
 	 */
-     "resources": ["pageAndRequestMap.js","inject.js","interceptXHRorFETCH.js"],
+     "resources": ["pageAndRequestMap.js","interceptXHRorFETCH.js"],
      "matches": ["https://*.amazon.com/*", "https://*.baidu.com/*"]
    }
   ],

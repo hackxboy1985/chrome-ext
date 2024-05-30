@@ -11,7 +11,7 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     urlMapArray[0].requestUrl.map(item=>{
       // only postMessage when requestUrl is in map array
       if(requestUrl.match(item)) {
-			console.log('requestUrl=',requestUrl,', match item',item);
+			//console.log('requestUrl=',requestUrl,', match item',item);
 		    urlMapArray[0].handler({data, customEvent: true, requestUrl:requestUrl}, document);
 			//window.postMessage('message', {data, customEvent: true, requestUrl:requestUrl});
 	  }else{
@@ -20,14 +20,15 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     })
 }
 
+
 //下面拦截生效
 (async function (){
     let oldXHROpen = window.XMLHttpRequest.prototype.open;
     window.XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
         this.addEventListener('load', function() {
           //siteAndRequestMapArray from siteAndRequestMap.js
-		  if(url.includes('starmap'))
-			console.log('url=',url,', this.responseType=',this.responseType);
+		  //if(url.includes('starmap'))
+			//console.log('url=',url,', this.responseType=',this.responseType);
 		  if(this.responseType === 'text' || this.responseType === ''){
 			//console.log('url=',url,', responseText=',this.responseText);
 			passMessageIfInMap(url, this.responseText, pageAndRequestMapArray); 
@@ -61,3 +62,22 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
       return response;
     };
 }());
+
+// let docname="";
+// let isenable=false;
+// 	chrome.storage.local.get("isenable", function(obj) {
+		
+// 		chrome.storage.local.get("docname", function(obj) {
+// 			docname=obj.docname
+// 			console.log('intercept docname:',docname);
+// 		});
+		
+// 		isenable = obj.isenable;
+// 		if(obj.isenable){
+// 			console.log("intercept 插件已经准备开启");
+// 			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
+// 	//        setTimeout(sent_req,2000);
+// 		}else{
+// 			console.log("intercept 插件未开启");
+// 		}
+// 	});

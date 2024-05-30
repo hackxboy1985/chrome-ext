@@ -21,9 +21,12 @@
 		//console.log(data);
 		console.log('@@@url=',data.requestUrl,',response=',data.data);
 		//alert(JSON.stringify(data));
-		console.log('window.docname=',window.docname);
+		//console.log('window.docname=',window.docname);
 		showWeakPrompt('抓到body');
-		//httpRequest('https://api.mints-tech.cn/camera-api/common/health','aa');
+		if(isenable){
+			httpRequest('https://api.mints-tech.cn/camera-api/common/health?a=docname','aa');
+		}
+		
 		
 		//tips(data.data);
 	}
@@ -56,7 +59,7 @@ function httpRequest(url,data, callback){
 }
 
 function showWeakPrompt(message) {
-  console.log('showWeakPrompt', document);
+  //console.log('showWeakPrompt', document);
 
   const weakPrompt = document.createElement('div');
   weakPrompt.id = 'hackxboy';
@@ -77,31 +80,8 @@ function showWeakPrompt(message) {
     document.body.removeChild(weakPrompt);
   }, 3000);
   
-  //init();
+
 }
-
-function init(){
-	document.addEventListener('contextmenu', function (e) {
-      e.preventDefault();
-
-      const customMenuItem = document.createElement('div');
-      customMenuItem.textContent = '清除';
-      customMenuItem.style.backgroundColor = 'lightgray';
-      customMenuItem.style.padding = '5px';
-
-      customMenuItem.addEventListener('click', function () {
-        // 在这里添加清除操作的代码
-        alert('执行清除操作！');
-      });
-
-      document.body.appendChild(customMenuItem);
-
-      setTimeout(() => {
-        document.body.removeChild(customMenuItem);
-      }, 3000);
-    });
-}
-
 
 function tips(str){
 	// 检查浏览器是否支持Notification API
@@ -142,17 +122,13 @@ function tips(str){
 
 
 //export let docname="";
+let docname="";
+let isenable=false;
 function loadcfg(){
 	console.log('-----');
 	chrome.storage.local.get("isenable", function(obj) {
-		
-		let docname='';
-		chrome.storage.local.get("docname", function(obj) {
-			docname=obj.docname
-		});
-		window.docname=docname;
-		console.log('doc name:',window.docname);
 
+		isenable = obj.isenable;
 		if(obj.isenable){
 			console.log("插件已经准备开启");
 			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
@@ -161,7 +137,35 @@ function loadcfg(){
 			console.log("插件未开启");
 		}
 	});
+	
+	chrome.storage.local.get("docname", function(obj) {
+		docname=obj.docname
+		console.log('intercept docname:',docname);
+	});
 }
+loadcfg();
 
-//程序入口
-//setTimeout(loadcfg,2000);
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+	console.log('rcv msg',message);
+  if (message.action === 'propt') {
+    // 在这里做些事情，然后发送响应
+	showWeakPrompt(message.msg);
+    sendResponse('已提示');
+	
+  }
+});
+
+chrome.runtime.onConnect.addListener(function(port) {
+  var tab = port.sender.tab;
+
+  // This will get called by the content script we execute in
+  // the tab as a result of the user pressing the browser action.
+  port.onMessage.addListener(function(info) {
+	  console.log('receive msg');
+    var max_length = 1024;
+    // if (info.selection.length > max_length)
+    //   info.selection = info.selection.substring(0, max_length);
+    
+  });
+});
+
