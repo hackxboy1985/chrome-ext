@@ -73,28 +73,40 @@ window.addEventListener('message', function(e) {
 //     schema["listing.sellingProduct.productName.1.text"]             = jsonpath(data.listing.sellingProduct.product)
 // }
 
-function loadcfg(){
-	
-	chrome.storage.local.get("isenable", function(obj) {
+let casdocname="";
+let casenable=false;
+let adxdocname="";
+let adxenable=false;
 
-		
-		chrome.storage.local.get("docname", function(obj) {
-			let docname="";
-			docname=obj.docname
-			console.log('loadcfg docname:',docname);
-		});
-		
-		
-		//window.docname=docname;
-		//console.log('window.docname:',window.docname);
-		
-		if(obj.isenable){
-			console.log("插件已经准备开启");
-			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
-	//        setTimeout(sent_req,2000);
+function loadcfg(){
+	console.log('-----');
+	chrome.storage.local.get("casenable", function(obj) {
+
+		casenable = obj.casenable;
+		if(casenable){
+			console.log("cas插件已经准备开启 casenable=",casenable);
 		}else{
-			console.log("插件未开启");
+			console.log("cas插件未开启");
 		}
+	});
+	chrome.storage.local.get("casdocname", function(obj) {
+		casdocname=obj.casdocname
+		console.log('content casdocname:',casdocname);
+	});
+
+	
+	chrome.storage.local.get("adxenable", function(obj) {
+	
+		adxenable = obj.adxenable;
+		if(adxenable){
+			console.log("adx插件已经准备开启");
+		}else{
+			console.log("adx插件未开启");
+		}
+	});
+	chrome.storage.local.get("adxdocname", function(obj) {
+		adxdocname=obj.adxdocname
+		console.log('content adxdocname:',adxdocname);
 	});
 }
 

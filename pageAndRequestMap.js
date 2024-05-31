@@ -19,7 +19,7 @@
 	handler: function (data, doc, win){
 		// console.log(data, doc,1688);
 		//console.log(data);
-		console.log('@@@url=',data.requestUrl,',response=',data.data);
+		console.log('adxdocname=',adxdocname, '@@@url=',data.requestUrl,',response=',data.data);
 		//alert(JSON.stringify(data));
 		//console.log('window.docname=',window.docname);
 		showWeakPrompt('抓到body');
@@ -83,67 +83,46 @@ function showWeakPrompt(message) {
 
 }
 
-function tips(str){
-	// 检查浏览器是否支持Notification API
-	if ('Notification' in window) {
-	   console.log('tip1');
-	  // 检查用户是否已经允许通知
-	  if (Notification.permission === "granted") {
-		console.log('tip1 granted');  
-		// 如果已经允许，则直接创建通知
-		var notification = new Notification('标题', {
-		  body: str,
-		  icon: 'https://himg.bdimg.com/sys/portraitn/item/public.1.4740939e.jB25tZF2t_Ql0YneVjFRRQ' // 通知的图标
-		});
-		console.log("will show notification")
-		
-		 // 可以添加事件，来触发交互
-		  notification.onclick=function () {
-		    console.log("click notification")
-		  }
-	  } else {
-		  console.log('tip1 request permission');  
-		// 如果尚未允许，请求用户授权
-		Notification.requestPermission()
-		  .then((permission) => {
-			if (permission === "granted") {
-			  var notification = new Notification('标题', {
-				body: str,
-				icon: 'notif-icon.png'
-			  });
-			}
-		  });
-	  }
-	} else {
-		console.log('tip2 你的浏览器不支持通知');
-	  //alert('你的浏览器不支持通知');
-	}
-}
 
 
 //export let docname="";
-let docname="";
-let isenable=false;
-function loadcfg(){
-	console.log('-----');
-	chrome.storage.local.get("isenable", function(obj) {
+// let casdocname="";
+// let casenable=false;
+// let adxdocname="";
+// let adxenable=false;
 
-		isenable = obj.isenable;
-		if(obj.isenable){
-			console.log("插件已经准备开启");
-			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
-	//        setTimeout(sent_req,2000);
+function loadcfg2(){
+	console.log('-----');
+	chrome.storage.local.get("casenable", function(obj) {
+
+		casenable = obj.casenable;
+		if(casenable){
+			console.log("cas插件已经准备开启 casenable=",casenable);
 		}else{
-			console.log("插件未开启");
+			console.log("cas插件未开启");
 		}
 	});
+	chrome.storage.local.get("casdocname", function(obj) {
+		casdocname=obj.casdocname
+		console.log('cnt casdocname:',casdocname);
+	});
+
 	
-	chrome.storage.local.get("docname", function(obj) {
-		docname=obj.docname
-		console.log('intercept docname:',docname);
+	chrome.storage.local.get("adxenable", function(obj) {
+	
+		adxenable = obj.adxenable;
+		if(adxenable){
+			console.log("adx插件已经准备开启");
+		}else{
+			console.log("adx插件未开启");
+		}
+	});
+	chrome.storage.local.get("adxdocname", function(obj) {
+		adxdocname=obj.adxdocname
+		console.log('cnt adxdocname:',adxdocname);
 	});
 }
-loadcfg();
+loadcfg2();
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 	console.log('rcv msg',message);
@@ -151,12 +130,16 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     // 在这里做些事情，然后发送响应
 	showWeakPrompt(message.msg);
     sendResponse('已提示');
-	
+  }
+  if(message.action === 'save'){
+	  loadcfg2();
+	  sendResponse('已更新');
   }
 });
 
 chrome.runtime.onConnect.addListener(function(port) {
   var tab = port.sender.tab;
+ console.log('receive msg onConnect');
 
   // This will get called by the content script we execute in
   // the tab as a result of the user pressing the browser action.
