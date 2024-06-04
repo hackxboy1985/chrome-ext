@@ -11,9 +11,10 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     urlMapArray[0].requestUrl.map(item=>{
       // only postMessage when requestUrl is in map array
       if(requestUrl.match(item)) {
-			//console.log('requestUrl=',requestUrl,', match item',item);
-		    urlMapArray[0].handler({data, customEvent: true, requestUrl:requestUrl}, document);
-			//window.postMessage('message', {data, customEvent: true, requestUrl:requestUrl});
+			console.log('requestUrl=',requestUrl,', match item',item);
+		    //urlMapArray[0].handler({data, customEvent: true, requestUrl:requestUrl}, document,urlMapArray[0]);
+			//window.postMessage('message', {data, customEvent: true, requestUrl:requestUrl, tag:1});
+			window.postMessage({data, customEvent: true, requestUrl:requestUrl, tag:1});
 	  }else{
 		  //console.log('requestUrl=',requestUrl,',not match item',item);
 	  }
@@ -63,21 +64,4 @@ const passMessageIfInMap = (requestUrl , data, urlMapArray) => {
     };
 }());
 
-// let docname="";
-// let isenable=false;
-// 	chrome.storage.local.get("isenable", function(obj) {
-		
-// 		chrome.storage.local.get("docname", function(obj) {
-// 			docname=obj.docname
-// 			console.log('intercept docname:',docname);
-// 		});
-		
-// 		isenable = obj.isenable;
-// 		if(obj.isenable){
-// 			console.log("intercept 插件已经准备开启");
-// 			 //chrome.storage.local.set({"log":"插件已经准备开启!"});
-// 	//        setTimeout(sent_req,2000);
-// 		}else{
-// 			console.log("intercept 插件未开启");
-// 		}
-// 	});
+

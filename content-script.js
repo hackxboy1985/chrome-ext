@@ -12,7 +12,7 @@ function injectScript(file_path, node) {
 }
 
 // run after window is loaded
-//addEventListener('load', (event) => { injectScript(chrome.runtime.getURL('inject.js'), document.getElementsByTagName("body")[0]); });
+// addEventListener('load', (event) => { injectScript(chrome.runtime.getURL('inject.js'), document.getElementsByTagName("body")[0]); });
 
 /**
  * inject following script to get xhr or fetch response body
@@ -22,21 +22,33 @@ injectScript(chrome.runtime.getURL('pageAndRequestMap.js'), (document.head || do
 injectScript(chrome.runtime.getURL('interceptXHRorFETCH.js'), (document.head || document.documentElement));
 
 window.addEventListener('message', function(e) {
-	//console.log('111 url=',e.currentTarget.location.href)
-	/**
-     //console.log(e.data);
+	// console.log('111 url=',e.currentTarget.location.href)
+	// /**
+	 
+	 //console.log(e.data);
+	 if(e.data.tag === null || e.data.tag === undefined)return;
+	 //console.log('111 url=',e.currentTarget.location.href)
+    
     let pageUrls = pageAndRequestMapArray.filter(item=>{
       return item.pageUrl!==undefined&&e.currentTarget.location.href.match(item.pageUrl);
     });
-	//console.log('pageUrls=',pageUrls);
 	//console.log('e.data.customEvent=',e.data.customEvent);
     if(!pageUrls.length||!e.data.customEvent) return;
     // return window
-    if(e.data.window) {pageUrls[0].handler(e.data, document); return};
+    if(e.data.window) {
+		// console.log('pageUrls1=',e.data.requestUrl);
+		// console.log(e.data);
+		pageUrls[0].handler(e.data, document,pageUrls[0]); 
+		return
+		};
     pageUrls[0].requestUrl.map(item=>{
-      if(e.data.requestUrl.match(item)) pageUrls[0].handler(e.data, document);
+      if(e.data.requestUrl.match(item)) {
+		// console.log('pageUrls2=',e.data.requestUrl);
+		// console.log(e.data);
+		pageUrls[0].handler(e.data, document,pageUrls[0]);
+	  }
     });
-	**/
+	// **/
 	
 	
 	
@@ -73,42 +85,42 @@ window.addEventListener('message', function(e) {
 //     schema["listing.sellingProduct.productName.1.text"]             = jsonpath(data.listing.sellingProduct.product)
 // }
 
-let casdocname="";
-let casenable=false;
-let adxdocname="";
-let adxenable=false;
+// let casdocname="";
+// let casenable=false;
+// let adxdocname="";
+// let adxenable=false;
 
-function loadcfg(){
-	console.log('-----');
-	chrome.storage.local.get("casenable", function(obj) {
+// function loadcfg(){
+// 	console.log('content-----');
+// 	chrome.storage.local.get("casenable", function(obj) {
 
-		casenable = obj.casenable;
-		if(casenable){
-			console.log("cas插件已经准备开启 casenable=",casenable);
-		}else{
-			console.log("cas插件未开启");
-		}
-	});
-	chrome.storage.local.get("casdocname", function(obj) {
-		casdocname=obj.casdocname
-		console.log('content casdocname:',casdocname);
-	});
+// 		casenable = obj.casenable;
+// 		if(casenable){
+// 			console.log("cas插件已经准备开启 casenable=",casenable);
+// 		}else{
+// 			console.log("cas插件未开启");
+// 		}
+// 	});
+// 	chrome.storage.local.get("casdocname", function(obj) {
+// 		casdocname=obj.casdocname
+// 		console.log('content casdocname:',casdocname);
+// 	});
 
 	
-	chrome.storage.local.get("adxenable", function(obj) {
+// 	chrome.storage.local.get("adxenable", function(obj) {
 	
-		adxenable = obj.adxenable;
-		if(adxenable){
-			console.log("adx插件已经准备开启");
-		}else{
-			console.log("adx插件未开启");
-		}
-	});
-	chrome.storage.local.get("adxdocname", function(obj) {
-		adxdocname=obj.adxdocname
-		console.log('content adxdocname:',adxdocname);
-	});
-}
+// 		adxenable = obj.adxenable;
+// 		if(adxenable){
+// 			console.log("adx插件已经准备开启");
+// 		}else{
+// 			console.log("adx插件未开启");
+// 		}
+// 	});
+// 	chrome.storage.local.get("adxdocname", function(obj) {
+// 		adxdocname=obj.adxdocname
+// 		console.log('content adxdocname:',adxdocname);
+// 	});
+// }
 
 
 // chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {

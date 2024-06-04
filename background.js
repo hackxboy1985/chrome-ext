@@ -81,6 +81,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
   
 
 let docname="";
+
 let isenable=false;
 function loadcfg(){
 	console.log('bg');
@@ -118,10 +119,18 @@ function showWeakPrompt(message) {
 	});
 }
 
-
  
-// document.addEventListener("contextmenu", (e) => {
-//   e.preventDefault(); 
-//   // 在此处添加显示自定义菜单的代码
+ 
+// chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+// 	// console.log('rcv msg',message);
+//   if (message.action === 'propt') {
+//     // 在这里做些事情，然后发送响应
+// 	showWeakPrompt(message.msg);
+//     sendResponse('已提示');
+//   }
+//   if(message.action === 'save'){
+// 	  loadcfgwithtype(message.type);
+// 	  sendResponse('已更新');
+//   }
 // });
 
