@@ -2,19 +2,45 @@
 <html>
   <head>
     <!-- <link rel="stylesheet" href="button.css"> -->
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<!-- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+	<script src="/assets/js/jquery.js"></script>
+	<script src="/assets/bootstrap/js/popper.min.js"></script>
+	<script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/assets/icon/iconfont.css">
+	<link rel="stylesheet" href="/assets/css/base.css">
+	
   </head>
   <body>
     <!-- <button id="changeColor"></button> -->
-	<div style="width: 80%;height:auto;text-align: center">
+	<!-- <div style="width: 100%;height:auto;text-align: center"> -->
+	<div class="page" id="pane">
 	        <br/>
 			
 			<span class="big">cas 目录：</span><input class="biginput" type="text" id="casdocname" value=""/>
 			<span class="big">启用：</span><input  type="checkbox" id="casenable" /><br/><br/>
-			<br/><br/>
+
 			<span class="big">adx 目录：</span><input class="biginput" type="text" id="adxdocname" value=""/>
 			<span class="big">启用：</span><input  type="checkbox" id="adxenable" /><br/><br/>
 
+
+			<br/>
+			<span class="big">自动翻页：</span><input  type="checkbox" id="autonext" /><br/>
+			<div class="form-option input-member mt-2">
+			    <label for="" class="form-label">翻页按钮xpath：</label>
+			    <input type="text" class="form-control form-control-sm disabled" id="xpath-pagination"
+			        placeholder="翻页按钮位置"></input>
+			    <!-- <i class="iconfont icon-daixuanze ready-choose" id="xpath-ready"></i> -->
+			</div>
+			
+			<div class="form-option mt-2">
+			    <label for="" class="form-label">翻页次数：</label>
+			    <input type="number" class="form-control form-control-sm" id="pagination-times"
+			        placeholder="请输入翻页的次数" min="0"></input>
+			</div>
 	        <!-- <input type="button" class="biginput" id="save" value="保存" /><br/> -->
 	</div>
     <script src="popup.js"></script>

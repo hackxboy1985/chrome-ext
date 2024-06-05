@@ -1,3 +1,15 @@
+// 获取当前选项卡
+chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+  // 向当前页注入脚本
+  chrome.tabs.executeScript(
+    tabs[0].id,
+    { file: "/assets/js/jquery.js" },
+    function () {
+      console.log("jquery注入成功");
+    }
+  );
+});
+
 window.onload=function(){
 	
 	let type = 'cas';
@@ -18,20 +30,18 @@ window.onload=function(){
 		document.getElementById('adxenable').checked=enable
 	});
 	
-	// chrome.storage.local.get("casdocname", function(obj) {
-	// 	document.getElementById('casdocname').value=obj.casdocname
-	// });
-	// chrome.storage.local.get("casenable", function(obj) {
-	//     document.getElementById('casenable').checked=obj.casenable
-	// });
-	
-	// chrome.storage.local.get("adxdocname", function(obj) {
-	//     document.getElementById('adxdocname').value=obj.adxdocname
-	// });
-	
-	// chrome.storage.local.get("adxenable", function(obj) {
-	//     document.getElementById('adxenable').checked=obj.adxenable
-	// });
+	let autonexttype = 'autonext';
+	chrome.storage.local.get(autonexttype, function(obj) {
+		//console.log(type,' load cfg: ',obj)
+		let enable = obj[autonexttype].autonextenable;
+		let xpath = obj[autonexttype].xpath;
+		let next_times = obj[autonexttype].next_times;
+		//showWeakPrompt('读取次数:'+next_times);
+		
+		document.getElementById('autonext').checked=enable;
+		document.getElementById('xpath-pagination').value=xpath;
+		document.getElementById('pagination-times').value=next_times;
+	});
 
 }
 
@@ -78,6 +88,47 @@ document.getElementById('adxenable').onclick = function(){
 	    showWeakPrompt('设置已保存');
 	});
 	
+}
+
+//自动翻页
+document.getElementById('autonext').onclick = function(){
+	var autonext  = document.getElementById('autonext').checked;
+	if(autonext){
+		//post msg
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		  chrome.tabs.sendMessage(tabs[0].id, {action: 'getPaginationXpath',  msg:'nextBtn'}, function(response) {
+			  //autoPageSave();
+		  });
+		});
+	}else{
+		autoPageSave();
+	}
+}
+
+//次数
+document.getElementById('pagination-times').oninput = function(){
+	
+	autoPageSave();
+}
+
+function autoPageSave(){
+	if(document.getElementById('pagination-times').value === undefined)
+		document.getElementById('pagination-times').value = 2;
+	
+	var autonextenable  = document.getElementById('autonext').checked;
+	var xpath  = document.getElementById('xpath-pagination').value;
+	var next_times  = document.getElementById('pagination-times').value;
+	var p = {
+		"autonext":{
+			"autonextenable":autonextenable,
+			"xpath":xpath,
+			"next_times":next_times,
+		}
+	};
+	
+	chrome.storage.local.set(p,function(){
+	    showWeakPrompt('设置已保存:'+p);
+	});
 }
 
 //保存
@@ -136,3 +187,49 @@ function showWeakPrompt(message) {
 	// }
  //  });
 }
+
+
+
+//给输入框中的指针图标添加点击事件
+// $("#pane .ready-choose").each(function () {
+//   $(this).click(function () {
+//     if ($(this).hasClass("active")) {
+//       $(this).removeClass("active");
+//     } else {
+//       $("#pane .ready-choose").each(function () {
+// 		//showWeakPrompt('remove:',$(this).id);
+//         $(this).removeClass("active");
+//       });
+// 	  showWeakPrompt('点击:',$(this).id);
+//       $(this).addClass("active");
+	  
+// 	  //post msg
+// 	  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+// 	    chrome.tabs.sendMessage(tabs[0].id, {action: 'getPaginationXpath',  msg:'nextBtn'}, function(response) {
+// 	      console.log('收到content_scripts回复结果：'+ response);
+// 	    });
+// 	  });
+	  
+//     }
+//   });
+// });
+
+
+// 监听消息
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  showWeakPrompt('rcv:'+message.action);
+  //接收content.js获取到的xpath
+  if (message.action === "sendPaginationXpath") {
+
+	  chrome.storage.local.get("xpath", function(obj) {
+	  	let xpath = obj.xpath;
+		$("#xpath-pagination").val(xpath);
+		autoPageSave();
+	  });
+		
+	  
+	  // $("#xpath-pagination").val(message.xpath);
+	  // $("#xpath-pagination").attr("title", message.xpath);
+	  // $("#pagination-times").val(0);
+  }
+ });

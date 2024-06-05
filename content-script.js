@@ -73,6 +73,48 @@ window.addEventListener('message', function(e) {
     // }
 })
 
+
+function autoNext(){
+	var pageTimes = 0;
+		  
+	if (message.page) {
+	  pageTimes = parseInt(message.page);
+	}
+		  
+	var count = 0;
+	//每间隔5秒点击一次分页
+	var timer = setInterval(() => {
+	  //抓取第一页数据 不需要翻页
+	  if (count > 0 && count < pageTimes + 1) {
+	    paginationBtn.click();
+	  }
+		  
+	  setTimeout(() => {
+	    // 将页面滚动到底部
+	    var element = document.documentElement;
+	    element.scrollTop = element.scrollHeight - element.clientHeight;
+		  
+	    var xpath = message.listXpath;
+	    //抓取数据
+	    fetchList(xpath, 1);
+		  
+	    //翻页次数累加
+	    count++;
+		  
+	    if (count >= pageTimes + 1) {
+	      //清除点击分页的定时器
+	      clearInterval(timer);
+	      //添加监听禁用所有元素点击事件
+	      addDisableClickEvent();
+		  
+	      //抓取结束
+	      chrome.runtime.sendMessage({
+	        action: "fetchEnded",
+	      });
+	    }
+	  }, 3000);
+	}, 5000);
+}
 // do sth you want to do with data intercepted
 // function save1688DataToNeo4j (data, apiUrl) {
 
@@ -85,42 +127,6 @@ window.addEventListener('message', function(e) {
 //     schema["listing.sellingProduct.productName.1.text"]             = jsonpath(data.listing.sellingProduct.product)
 // }
 
-// let casdocname="";
-// let casenable=false;
-// let adxdocname="";
-// let adxenable=false;
-
-// function loadcfg(){
-// 	console.log('content-----');
-// 	chrome.storage.local.get("casenable", function(obj) {
-
-// 		casenable = obj.casenable;
-// 		if(casenable){
-// 			console.log("cas插件已经准备开启 casenable=",casenable);
-// 		}else{
-// 			console.log("cas插件未开启");
-// 		}
-// 	});
-// 	chrome.storage.local.get("casdocname", function(obj) {
-// 		casdocname=obj.casdocname
-// 		console.log('content casdocname:',casdocname);
-// 	});
-
-	
-// 	chrome.storage.local.get("adxenable", function(obj) {
-	
-// 		adxenable = obj.adxenable;
-// 		if(adxenable){
-// 			console.log("adx插件已经准备开启");
-// 		}else{
-// 			console.log("adx插件未开启");
-// 		}
-// 	});
-// 	chrome.storage.local.get("adxdocname", function(obj) {
-// 		adxdocname=obj.adxdocname
-// 		console.log('content adxdocname:',adxdocname);
-// 	});
-// }
 
 
 // chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
@@ -153,3 +159,107 @@ window.addEventListener('message', function(e) {
 // }
 
 // loadcfg();
+
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	console.log('2message:',message);
+	if (message.action === "getPaginationXpath") {
+		// 获取页面中的所有元素
+		var elements = document.getElementsByTagName("*");
+		// 遍历所有元素
+		for (var i = 0; i < elements.length; i++) {
+		  var element = elements[i];
+		  // 判断元素是否为分页按钮
+		  if (isPaginationButton(element)) {
+			//console.log(element);
+			element.style.outline = "2px solid #22895e";
+			var xpath = getElementXpath(element);
+			console.log('2同步下一页按钮位置:',xpath);
+			//autoPageSave();
+			var p = {
+			    "xpath":xpath
+			}
+			chrome.storage.local.set(p,function(){
+			    //showWeakPrompt('save');
+				//notify
+				chrome.runtime.sendMessage({
+				  action: "sendPaginationXpath",
+				  xpath,
+				});
+			});
+			
+			
+			break;
+		  }
+		}
+	  }
+})
+
+
+// 判断元素是否为分页按钮的函数
+function isPaginationButton(element) {
+  // 判断元素的文本内容是否包含"下一页"、"下页"等关键词
+  var keywords = ["下一页", "下页"];
+  for (var i = 0; i < keywords.length; i++) {
+    if (
+      element.children.length == 0 &&
+      !["script", "style"].includes(element.tagName.toLowerCase())
+    ) {
+      if (element.innerHTML.trim().includes(keywords[i])) {
+        return true;
+      }
+
+      if (element.getAttribute("title")) {
+        if (element.getAttribute("title").trim().includes(keywords[i])) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+// 获取选中元素的 XPath
+function getElementXpath(element) {
+  var xpath = "";
+  while (element && element.nodeType === 1) {
+    var id = getElementId(element);
+    var tagName = element.tagName.toLowerCase();
+    var index = getElementIndex(element);
+    // xpath = "/" + tagName + "[" + index + "]" + xpath;
+    xpath = "/" + (index == 1 ? tagName : tagName + "[" + index + "]") + xpath;
+    element = element.parentNode;
+  }
+  return xpath;
+}
+
+
+function getElementId(element) {
+  if (element.id) {
+    return element.id;
+  }
+  var siblings = element.parentNode.children;
+  for (var i = 0; i < siblings.length; i++) {
+    if (siblings[i] === element) {
+      return i + 1;
+    }
+  }
+  return null;
+}
+
+// 获取元素在父节点中的索引
+function getElementIndex(element) {
+  var index = 1;
+  var previousSibling = element.previousSibling;
+  while (previousSibling) {
+    if (
+      previousSibling.nodeType === 1 &&
+      previousSibling.tagName === element.tagName
+    ) {
+      index++;
+    }
+    previousSibling = previousSibling.previousSibling;
+  }
+  return index;
+}
