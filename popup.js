@@ -39,7 +39,7 @@ window.onload=function(){
 		//showWeakPrompt('读取次数:'+next_times);
 		
 		document.getElementById('autonext').checked=enable;
-		document.getElementById('xpath-pagination').value=xpath;
+		// document.getElementById('xpath-pagination').value=xpath;
 		document.getElementById('pagination-times').value=next_times;
 	});
 
@@ -95,11 +95,12 @@ document.getElementById('autonext').onclick = function(){
 	var autonext  = document.getElementById('autonext').checked;
 	if(autonext){
 		//post msg
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		  chrome.tabs.sendMessage(tabs[0].id, {action: 'getPaginationXpath',  msg:'nextBtn'}, function(response) {
-			  //autoPageSave();
-		  });
-		});
+		// chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		//   chrome.tabs.sendMessage(tabs[0].id, {action: 'getPaginationXpath',  msg:'nextBtn'}, function(response) {
+		// 	  //autoPageSave();
+		//   });
+		// });
+		autoPageSave();
 	}else{
 		autoPageSave();
 	}
@@ -116,12 +117,12 @@ function autoPageSave(){
 		document.getElementById('pagination-times').value = 2;
 	
 	var autonextenable  = document.getElementById('autonext').checked;
-	var xpath  = document.getElementById('xpath-pagination').value;
+	// var xpath  = document.getElementById('xpath-pagination').value;
 	var next_times  = document.getElementById('pagination-times').value;
 	var p = {
 		"autonext":{
 			"autonextenable":autonextenable,
-			"xpath":xpath,
+			// "xpath":xpath,
 			"next_times":next_times,
 		}
 	};
@@ -148,6 +149,14 @@ function autoPageSave(){
 // 	});
 // }
 
+document.getElementById('startBtn').onclick = function(){
+		//post msg
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		  chrome.tabs.sendMessage(tabs[0].id, {action: 'localRefresh',  msg:'next'}, function(response) {
+			  //autoPageSave();
+		  });
+		});
+}
 
 function showWeakPrompt(message) {
   //console.log('showWeakPrompt', document);
@@ -223,7 +232,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 	  chrome.storage.local.get("xpath", function(obj) {
 	  	let xpath = obj.xpath;
-		$("#xpath-pagination").val(xpath);
+		//$("#xpath-pagination").val(xpath);
 		autoPageSave();
 	  });
 		

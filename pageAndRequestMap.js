@@ -33,7 +33,8 @@
 	pageUrl:"http.*?://.*baidu.com/*", 
 	requestUrl: [
 		//"https://.*baidu.com/*"
-		".*/starmap/api/.*"
+		// ".*/starmap/api/.*"
+		".*/pcsearch"
 	],
 	type:'cas',
 	docname:'',

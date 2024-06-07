@@ -45,6 +45,7 @@ window.addEventListener('message', function(e) {
       if(e.data.requestUrl.match(item)) {
 		// console.log('pageUrls2=',e.data.requestUrl);
 		// console.log(e.data);
+		console.log('match ...');
 		pageUrls[0].handler(e.data, document,pageUrls[0]);
 	  }
     });
@@ -73,48 +74,76 @@ window.addEventListener('message', function(e) {
     // }
 })
 
+let autoNextIng = false;
 
-function autoNext(){
-	var pageTimes = 0;
-		  
-	if (message.page) {
-	  pageTimes = parseInt(message.page);
-	}
-		  
-	var count = 0;
-	//每间隔5秒点击一次分页
-	var timer = setInterval(() => {
-	  //抓取第一页数据 不需要翻页
-	  if (count > 0 && count < pageTimes + 1) {
-	    paginationBtn.click();
-	  }
-		  
-	  setTimeout(() => {
-	    // 将页面滚动到底部
-	    var element = document.documentElement;
-	    element.scrollTop = element.scrollHeight - element.clientHeight;
-		  
-	    var xpath = message.listXpath;
-	    //抓取数据
-	    fetchList(xpath, 1);
-		  
-	    //翻页次数累加
-	    count++;
-		  
-	    if (count >= pageTimes + 1) {
-	      //清除点击分页的定时器
-	      clearInterval(timer);
-	      //添加监听禁用所有元素点击事件
-	      addDisableClickEvent();
-		  
-	      //抓取结束
-	      chrome.runtime.sendMessage({
-	        action: "fetchEnded",
-	      });
-	    }
-	  }, 3000);
-	}, 5000);
+function startNext(){
+	if(autoNextIng)return;
+	let autonexttype = "autonext";
+	chrome.storage.local.get(autonexttype, function(obj) {
+		let enable = obj[autonexttype].autonextenable;
+		// let xpath = obj[autonexttype].xpath;
+		let next_times = obj[autonexttype].next_times;
+		
+		
+		if(enable)
+			autoNextIng = true;
+		else
+			return;
+		
+		console.log("start next :",autoNextIng);
+		// var pageXpath = xpath;
+		
+		
+		var pageTimes = 0;
+			  
+		if (next_times) {
+		  pageTimes = parseInt(next_times);
+		}
+		
+		var count = 0;
+		//每间隔5秒点击一次分页
+		var timer = setInterval(() => {
+			
+			var pageXpath = getNextXPath();
+			var paginationBtn = document.evaluate(
+			  pageXpath,
+			  document,
+			  null,
+			  XPathResult.FIRST_ORDERED_NODE_TYPE,
+			  null
+			).singleNodeValue;
+			
+			if(paginationBtn == null || paginationBtn == undefined){
+				console.log("next btn can't pos");
+				clearInterval(timer);
+				autoNextIng = false;
+				return;
+			}
+			
+		  if (count > 0 && count < pageTimes + 1) {
+			console.log("点击次数",count);
+			paginationBtn.click();
+		  }
+			  
+		  setTimeout(() => {
+			// 将页面滚动到底部
+			var element = document.documentElement;
+			element.scrollTop = element.scrollHeight - element.clientHeight;
+			  
+			//翻页次数累加
+			count++;
+			  
+			if (count >= pageTimes + 1) {
+			  //清除点击分页的定时器
+			  clearInterval(timer);
+			  autoNextIng = false;
+			  console.log('finish')
+			}
+		  }, 2000);
+		}, 4000);
+	});
 }
+
 // do sth you want to do with data intercepted
 // function save1688DataToNeo4j (data, apiUrl) {
 
@@ -193,8 +222,28 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 		  }
 		}
 	  }
+	  else if (message.action === "localRefresh") {
+		  console.log('收到next命令');
+		  startNext();
+	  }
 })
 
+function getNextXPath(){
+	// 获取页面中的所有元素
+	var elements = document.getElementsByTagName("*");
+	// 遍历所有元素
+	for (var i = 0; i < elements.length; i++) {
+	  var element = elements[i];
+	  // 判断元素是否为分页按钮
+	  if (isPaginationButton(element)) {
+		//console.log(element);
+		element.style.outline = "2px solid #22895e";
+		var xpath = getElementXpath(element);
+		return xpath;
+	  }
+	}
+	return null;
+}
 
 // 判断元素是否为分页按钮的函数
 function isPaginationButton(element) {
