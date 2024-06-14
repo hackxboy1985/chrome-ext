@@ -1,16 +1,33 @@
  let pageAndRequestMapArray = [
 {
-	pageUrl:"http.*?:\\\/\\\/sellercentral.*?\\.amazon\\.com\\\/", 
-	requestUrl: [
-		"\\\/orders-api\\\/search\\?limit"
-	],
-	type:'amazon',
+	pageUrl:"http.*?://.*/search/material*", 
+ 	requestUrl: [
+		".*/material"
+ 	],
+	type:'adx',
 	docname:'',
 	enable:false,
-	handler: function (data, doc, win){
-		console.log(data, doc);
-		alert(JSON.stringify(data));
-	}
+ 	handler: function (data, doc, pthis){
+		loadcfgwithtype(pthis.type, function(cfg){
+			//console.log("load cfg:",cfg);
+			if(cfg !== null && cfg.enable !== null && cfg.enable !== undefined 
+				){
+				if(cfg.enable){
+					showWeakPrompt('上传['+cfg.docname+']目录');
+					//httpRequest('https://api.mints-tech.cn/camera-api/common/health?a=docname','aa');
+					let dt = {
+						"body":data,
+						"name":cfg.docname
+					};
+					sendPostRequest('http://test2.mints-id.com/api/material/ryun2',dt)
+				}else{
+					console.log("adx not enable");
+				}
+			}else{
+				//未配置
+			}
+		});
+ 	}
 },
 {
 	pageUrl:"http.*?://.*/creative/material*", 
@@ -54,26 +71,9 @@
 				}
 			}
 		});
-			// 向background发送消息
-			// chrome.runtime.sendMessage({action: 'catch', type: pthis.type, data:data, msg:'cas'}, function(response) {
-			//     console.log('pop 收到回复',response);
-			// });
-			
-			// if(obj.enable){
-			// 	httpRequest('https://api.mints-tech.cn/camera-api/common/health?a=docname','aa');
-			// }
-		// });
 		
 		//console.log('enable',pthis.enable,'docname=',pthis.docname, '@@@url=',data.requestUrl,',response=',data.data);
 		//alert(JSON.stringify(data));
-		//console.log('window.docname=',window.docname);
-		// showWeakPrompt('抓到body');
-		// if(enable){
-		// 	httpRequest('https://api.mints-tech.cn/camera-api/common/health?a=docname','aa');
-		// }
-		
-		
-		//tips(data.data);
 	}
 },
 {
@@ -105,6 +105,23 @@ function httpRequest(url,data, callback){
     xhr.send(data);
 	console.log('get end');
 }
+
+//构造请求，发给OA
+function sendPostRequest(url, data) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', url);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      console.log('请求成功，响应数据:', xhr.responseText);
+    }
+  };
+
+  xhr.send(JSON.stringify(data));
+}
+
+
 
 function showWeakPrompt(message) {
   //console.log('showWeakPrompt', document);
@@ -141,19 +158,21 @@ function showWeakPrompt(message) {
 function loadcfgwithtype(type,cb){
 	//console.log('loadcfgwithtype-----',type);
 	chrome.storage.local.get(type, function(obj) {
-		//console.log(type,' load cfg: ',obj)
-		let enable = obj[type].enable;
-		let docname = obj[type].docname;
-		let entity = pageAndRequestMapArray.filter(item=>{
-		  //console.log('currentLocation=',currentLocation,', item.pageUrl=',item.pageUrl);
-		  return item.type!==undefined&&item.type===type;
-		});
-		entity[0].enable = enable;
-		entity[0].docname = docname;
-		// console.log('load finish: ',entity);
-		// console.log('load finish2: ',pageAndRequestMapArray);
-		if(cb !== null && cb !== undefined)
-			cb(obj[type]);
+	//console.log(type,' load cfg: ',obj)
+	   if(obj[type] !== undefined){
+			let enable = obj[type].enable;
+			let docname = obj[type].docname;
+			// let entity = pageAndRequestMapArray.filter(item=>{
+			//   //console.log('currentLocation=',currentLocation,', item.pageUrl=',item.pageUrl);
+			//   return item.type!==undefined&&item.type===type;
+			// });
+			// entity[0].enable = enable;
+			// entity[0].docname = docname;
+			// console.log('load finish: ',entity);
+			// console.log('load finish2: ',pageAndRequestMapArray);
+			if(cb !== null && cb !== undefined)
+				cb(obj[type]);
+		}
 	});
 }
 
@@ -162,19 +181,7 @@ function loadcfg2(){
 	// console.log('loadcfg2');
 	loadcfgwithtype('cas');
 	loadcfgwithtype('adx');
-	// chrome.storage.local.get("casenable", function(obj) {
 
-	// 	casenable = obj.casenable;
-	// 	if(casenable){
-	// 		console.log("cas插件已经准备开启 casenable=",casenable);
-	// 	}else{
-	// 		console.log("cas插件未开启");
-	// 	}
-	// });
-	// chrome.storage.local.get("casdocname", function(obj) {
-	// 	casdocname=obj.casdocname
-	// 	console.log('cnt casdocname:',casdocname);
-	// });
 
 }
 

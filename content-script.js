@@ -45,7 +45,7 @@ window.addEventListener('message', function(e) {
       if(e.data.requestUrl.match(item)) {
 		// console.log('pageUrls2=',e.data.requestUrl);
 		// console.log(e.data);
-		console.log('match ...');
+		//console.log('match ...');
 		pageUrls[0].handler(e.data, document,pageUrls[0]);
 	  }
     });

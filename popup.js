@@ -128,7 +128,7 @@ function autoPageSave(){
 	};
 	
 	chrome.storage.local.set(p,function(){
-	    showWeakPrompt('设置已保存:'+p);
+	    //showWeakPrompt('设置已保存:'+p);
 	});
 }
 
@@ -231,7 +231,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "sendPaginationXpath") {
 
 	  chrome.storage.local.get("xpath", function(obj) {
-	  	let xpath = obj.xpath;
+	  	//let xpath = obj.xpath;
 		//$("#xpath-pagination").val(xpath);
 		autoPageSave();
 	  });
